@@ -33,6 +33,7 @@ func _ready() -> void:
 	army_button.pressed.connect(army_builder.open)
 	packs_button.pressed.connect(_open_packs)
 	pack_opening.open_requested.connect(_open_pack)
+	pack_opening.configure_debug_cards(development_cards)
 	game_session.pack_progress.progress_changed.connect(_show_pack_progress)
 	game_session.pack_inventory.count_changed.connect(_show_pack_count)
 	debug_pack_button.visible = OS.is_debug_build()
@@ -78,7 +79,13 @@ func _open_pack() -> void:
 	if not game_session.pack_inventory.consume_pack():
 		return
 	var new_flags: Array[bool] = []
+	var copies_before: Array[int] = []
+	var copies_after: Array[int] = []
+	var stars: Array[int] = []
 	for card: CardData in results:
 		new_flags.append(not collection.is_unlocked(card))
+		copies_before.append(collection.get_owned_copies(card))
 		collection.add_copy(card)
-	pack_opening.show_results(basic_pack.display_name, results, new_flags)
+		copies_after.append(collection.get_owned_copies(card))
+		stars.append(collection.get_star_level(card))
+	pack_opening.show_results(basic_pack.display_name, results, new_flags, copies_before, copies_after, stars)
