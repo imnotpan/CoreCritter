@@ -1,14 +1,44 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://game/ui/game_hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://game/ui/active_card_strip.gd" id="2_strip"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
-bg_color = Color(0.055, 0.105, 0.12, 0.82)
-content_margin_left = 5.0
+bg_color = Color(0.055, 0.065, 0.075, 0.94)
+content_margin_left = 6.0
 content_margin_top = 3.0
-content_margin_right = 5.0
+content_margin_right = 6.0
 content_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxFlat" id="Health_back"]
+bg_color = Color(0.16, 0.18, 0.2, 1)
+
+[sub_resource type="StyleBoxFlat" id="Health_fill"]
+bg_color = Color(0.66, 0.76, 0.72, 1)
+
+[sub_resource type="StyleBoxFlat" id="Button_normal"]
+bg_color = Color(0.12, 0.14, 0.16, 1)
+content_margin_left = 4.0
+content_margin_right = 4.0
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxFlat" id="Button_hover"]
+bg_color = Color(0.2, 0.24, 0.26, 1)
+content_margin_left = 4.0
+content_margin_right = 4.0
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+
+[sub_resource type="Theme" id="HUD_theme"]
+default_font_size = 10
+Button/colors/font_color = Color(0.82, 0.86, 0.87, 1)
+Button/styles/normal = SubResource("Button_normal")
+Button/styles/hover = SubResource("Button_hover")
+Button/styles/pressed = SubResource("Button_hover")
+MenuButton/styles/normal = SubResource("Button_normal")
+MenuButton/styles/hover = SubResource("Button_hover")
+MenuButton/styles/pressed = SubResource("Button_hover")
 
 [node name="HUD" type="Control"]
 layout_mode = 3
@@ -18,13 +48,14 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme = SubResource("HUD_theme")
 script = ExtResource("1_hud")
 
 [node name="Top" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 48.0
+offset_bottom = 36.0
 grow_horizontal = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
@@ -40,8 +71,8 @@ theme_override_constants/separation = 5
 [node name="WorldProgress" type="Label" parent="Top/Rows/Identity"]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.99, 0.85, 0.51, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.78, 0.83, 0.84, 1)
+theme_override_font_sizes/font_size = 11
 text = "OFFICE 1/4"
 
 [node name="CoreName" type="Label" parent="Top/Rows/Identity"]
@@ -49,8 +80,8 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "OFFICE PRINTER"
 clip_text = true
-theme_override_colors/font_color = Color(0.96, 0.96, 0.87, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.92, 0.94, 0.94, 1)
+theme_override_font_sizes/font_size = 11
 horizontal_alignment = 2
 
 [node name="Boss" type="Label" parent="Top/Rows/Identity"]
@@ -65,9 +96,12 @@ layout_mode = 2
 theme_override_constants/separation = 6
 
 [node name="CoreHealth" type="ProgressBar" parent="Top/Rows/HealthRow"]
-custom_minimum_size = Vector2(0, 10)
+custom_minimum_size = Vector2(0, 5)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("Health_back")
+theme_override_styles/fill = SubResource("Health_fill")
 max_value = 100.0
 value = 100.0
 show_percentage = false
@@ -75,7 +109,7 @@ show_percentage = false
 [node name="HealthPercent" type="Label" parent="Top/Rows/HealthRow"]
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.96, 0.87, 1)
+theme_override_colors/font_color = Color(0.92, 0.94, 0.94, 1)
 theme_override_font_sizes/font_size = 11
 text = "100%"
 horizontal_alignment = 2
@@ -86,7 +120,7 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -110.0
+offset_top = -76.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
@@ -97,7 +131,7 @@ layout_mode = 2
 theme_override_constants/separation = 3
 
 [node name="ActiveCardStrip" type="HBoxContainer" parent="Bottom/Rows"]
-custom_minimum_size = Vector2(0, 55)
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 script = ExtResource("2_strip")
 
@@ -106,21 +140,21 @@ layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="Coins" type="Label" parent="Bottom/Rows/Footer"]
-custom_minimum_size = Vector2(66, 0)
+custom_minimum_size = Vector2(0, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.47, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.78, 0.83, 0.84, 1)
+theme_override_font_sizes/font_size = 9
 text = "COINS 0"
 
 [node name="Packs" type="Label" parent="Bottom/Rows/Footer"]
-custom_minimum_size = Vector2(48, 0)
+custom_minimum_size = Vector2(0, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.91, 0.88, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_colors/font_color = Color(0.78, 0.83, 0.84, 1)
+theme_override_font_sizes/font_size = 9
 text = "PACKS 0"
 
 [node name="PackProgress" type="Label" parent="Bottom/Rows/Footer"]
-custom_minimum_size = Vector2(49, 0)
+custom_minimum_size = Vector2(0, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.8, 0.79, 1)
 theme_override_font_sizes/font_size = 9
@@ -131,14 +165,39 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
+[node name="BoonButton" type="Button" parent="Bottom/Rows/Footer"]
+visible = false
+layout_mode = 2
+text = "BOON READY"
+theme_override_font_sizes/font_size = 9
+
+[node name="DebugMenu" type="MenuButton" parent="Bottom/Rows/Footer"]
+visible = false
+layout_mode = 2
+text = "DBG"
+theme_override_font_sizes/font_size = 9
+
 [node name="PacksButton" type="Button" parent="Bottom/Rows/Footer"]
-custom_minimum_size = Vector2(62, 25)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "PACKS"
 
 [node name="PauseButton" type="Button" parent="Bottom/Rows/Footer"]
-custom_minimum_size = Vector2(62, 25)
+custom_minimum_size = Vector2(0, 22)
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "OPTIONS"
+
+[node name="BoonChoices" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = -190.0
+offset_right = -6.0
+offset_bottom = -80.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")

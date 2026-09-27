@@ -38,60 +38,6 @@ theme_override_font_sizes/font_size = 22
 text = "CORE DESTROYED"
 horizontal_alignment = 1
 
-[node name="DebugPackButton" type="Button" parent="UI"]
-visible = false
-offset_left = 295.0
-offset_top = 176.0
-offset_right = 393.0
-offset_bottom = 198.0
-theme_override_font_sizes/font_size = 9
-text = "+1 PACK"
-
-[node name="DebugDestroy" type="Button" parent="UI"]
-visible = false
-offset_left = 295.0
-offset_top = 199.0
-offset_right = 393.0
-offset_bottom = 221.0
-theme_override_font_sizes/font_size = 9
-text = "KILL CORE"
-
-[node name="DebugUnlock" type="Button" parent="UI"]
-visible = false
-offset_left = 295.0
-offset_top = 153.0
-offset_right = 393.0
-offset_bottom = 175.0
-theme_override_font_sizes/font_size = 9
-text = "UNLOCK NEXT"
-
-[node name="DebugCard" type="Button" parent="UI"]
-visible = false
-offset_left = 7.0
-offset_top = 153.0
-offset_right = 105.0
-offset_bottom = 175.0
-theme_override_font_sizes/font_size = 9
-text = "UNLOCK CARD"
-
-[node name="DebugWorld" type="Button" parent="UI"]
-visible = false
-offset_left = 7.0
-offset_top = 176.0
-offset_right = 105.0
-offset_bottom = 198.0
-theme_override_font_sizes/font_size = 9
-text = "FINISH RUN"
-
-[node name="DebugInspect" type="Button" parent="UI"]
-visible = false
-offset_left = 7.0
-offset_top = 199.0
-offset_right = 105.0
-offset_bottom = 221.0
-theme_override_font_sizes/font_size = 9
-text = "INSPECT DECKS"
-
 [node name="ArmyBuilder" parent="UI" instance=ExtResource("11_builder")]
 
 [node name="PackOpening" parent="UI" instance=ExtResource("13_pack_opening")]

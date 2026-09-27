@@ -24,6 +24,8 @@ color = Color(1, 0.68, 0.18, 0.95)
 polygon = PackedVector2Array(0, -13, 5, -7, 13, -9, 9, -2, 14, 5, 5, 6, 0, 14, -4, 6, -13, 9, -9, 0, -14, -6, -5, -7)
 
 [node name="NameLabel" type="Label" parent="."]
+visible = false
+mouse_filter = 2
 offset_left = -25.0
 offset_top = -32.0
 offset_right = 25.0

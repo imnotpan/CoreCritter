@@ -13,12 +13,6 @@ const OverlayController = preload("res://game/desktop/overlay_controller.gd")
 @onready var pack_opening: PackOpening = $UI/PackOpening
 @onready var world_select: WorldSelect = $UI/WorldSelect
 @onready var flow: AppFlow = $UI/AppFlow
-@onready var debug_pack_button: Button = $UI/DebugPackButton
-@onready var debug_destroy_button: Button = $UI/DebugDestroy
-@onready var debug_unlock_button: Button = $UI/DebugUnlock
-@onready var debug_card_button: Button = $UI/DebugCard
-@onready var debug_world_button: Button = $UI/DebugWorld
-@onready var debug_inspect_button: Button = $UI/DebugInspect
 
 var collection := CardCollection.new()
 var deck := DeckLoadout.new()
@@ -208,20 +202,16 @@ func _setup_debug() -> void:
 	var runtime := RunDebugTools.new()
 	runtime.session = game_session
 	game_session.add_child(runtime)
-	hud.debug_requested.connect(runtime.execute)
-	debug_pack_button.pressed.connect(func() -> void: game_session.pack_inventory.add_pack())
-	debug_destroy_button.pressed.connect(game_session.debug_destroy_core)
-	debug_unlock_button.pressed.connect(game_session.debug_unlock_next_world)
-	debug_card_button.pressed.connect(_debug_unlock_card)
-	debug_world_button.pressed.connect(game_session.debug_complete_world)
-	debug_inspect_button.pressed.connect(_debug_inspect)
-	flow.play_requested.connect(_show_debug_buttons)
-	flow.continue_requested.connect(_show_debug_buttons)
-
-
-func _show_debug_buttons() -> void:
-	for button: Button in [debug_pack_button, debug_destroy_button, debug_unlock_button, debug_card_button, debug_world_button, debug_inspect_button]:
-		button.show()
+	hud.debug_requested.connect(func(action: StringName) -> void:
+		match action:
+			&"unlock_card": _debug_unlock_card()
+			&"finish_run": game_session.debug_complete_world()
+			&"inspect_decks": _debug_inspect()
+			&"unlock_next": game_session.debug_unlock_next_world()
+			&"add_pack": game_session.pack_inventory.add_pack()
+			&"kill_core": game_session.debug_destroy_core()
+			_: runtime.execute(action)
+	)
 
 
 func _debug_unlock_card() -> void:

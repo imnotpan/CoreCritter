@@ -49,8 +49,8 @@ func show_core_health(current: float, maximum: float) -> void:
 	health_percent.text = "%d%%" % roundi(100.0 * current / maxf(maximum, 1.0))
 
 
-var boon_button: Button
-var boon_choices: PanelContainer
+@onready var boon_button: Button = $Bottom/Rows/Footer/BoonButton
+@onready var boon_choices: PanelContainer = $BoonChoices
 var regroup_label: Label
 var session: GameSession
 
@@ -60,19 +60,10 @@ signal debug_requested(action: StringName)
 
 func configure_interactions(game: GameSession) -> void:
 	session = game
-	boon_button = Button.new()
-	boon_button.text = "BOON READY"
-	boon_button.add_theme_font_size_override("font_size", 9)
-	boon_button.position = Vector2(8, 52)
-	add_child(boon_button)
 	boon_button.pressed.connect(func() -> void: boon_choices.visible = not boon_choices.visible)
-	boon_choices = PanelContainer.new()
-	boon_choices.position = Vector2(8, 78)
-	boon_choices.custom_minimum_size = Vector2(384, 0)
-	add_child(boon_choices)
 	regroup_label = Label.new()
-	regroup_label.position = Vector2(115, 54)
-	regroup_label.text = "ARMY DOWN / REGROUPING..."
+	regroup_label.position = Vector2(8, 42)
+	regroup_label.text = "REGROUPING…"
 	regroup_label.add_theme_font_size_override("font_size", 10)
 	regroup_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(regroup_label)
@@ -101,10 +92,18 @@ func _refresh_boons() -> void:
 	boon_choices.add_child(column)
 	for boon: BoonData in options:
 		var button := Button.new()
-		button.text = boon.display_name + " — " + boon.description
+		button.text = boon.display_name
+		button.tooltip_text = boon.description
 		button.add_theme_font_size_override("font_size", 10)
 		button.pressed.connect(func() -> void: boon_requested.emit(boon))
 		column.add_child(button)
+		var description := Label.new()
+		description.text = boon.description
+		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		description.add_theme_font_size_override("font_size", 9)
+		description.add_theme_color_override("font_color", Color("9da9ad"))
+		description.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		column.add_child(description)
 	var later := Button.new()
 	later.text = "LATER"
 	later.pressed.connect(boon_choices.hide)
@@ -112,12 +111,11 @@ func _refresh_boons() -> void:
 
 
 func _add_run_debug() -> void:
-	var menu := MenuButton.new()
-	menu.text = "DEBUG"
-	menu.add_theme_font_size_override("font_size", 9)
-	menu.position = Vector2(344, 52)
-	add_child(menu)
+	var menu: MenuButton = $Bottom/Rows/Footer/DebugMenu
+	menu.show()
+	menu.get_popup().max_size = Vector2i(240, 220)
 	var actions: Array[StringName] = [
+		&"unlock_card", &"finish_run", &"inspect_decks", &"unlock_next", &"add_pack", &"kill_core",
 		&"damage_unit", &"ko_unit", &"ko_all", &"core_ability", &"threat", &"reset_commands",
 		&"frog", &"slug", &"chicken", &"wizard", &"bomb_baby", &"mushroom", &"grant_boon",
 		&"frog_business", &"chicken_union", &"fast_delivery", &"health_plan", &"overtime",
@@ -125,3 +123,10 @@ func _add_run_debug() -> void:
 	for action: StringName in actions:
 		menu.get_popup().add_item(String(action).replace("_", " ").to_upper())
 	menu.get_popup().id_pressed.connect(func(index: int) -> void: debug_requested.emit(actions[index]))
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_VISIBILITY_CHANGED and is_node_ready():
+		boon_choices.hide()
+		var menu: MenuButton = $Bottom/Rows/Footer/DebugMenu
+		menu.get_popup().hide()
