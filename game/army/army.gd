@@ -13,10 +13,12 @@ const SPAWN_VARIATION := 9.0
 var units_parent: Node2D
 var target: CoreTarget
 var loadout: ArmyLoadout
+var collection: CardCollection
 var spawn_timers: Array[Timer] = []
-var scheduled_data: Array[UnitData] = []
+var scheduled_cards: Array[CardData] = []
 var spawn_count := 0
 var active_counts: Dictionary = {}
+var active_units: Array[Unit] = []
 var running := false
 
 
@@ -29,6 +31,7 @@ func set_loadout(army_loadout: ArmyLoadout) -> void:
 	if loadout != null and loadout.changed.is_connected(_on_loadout_changed):
 		loadout.changed.disconnect(_on_loadout_changed)
 	loadout = army_loadout
+	collection = loadout.collection
 	loadout.changed.connect(_on_loadout_changed)
 	if running:
 		_rebuild_schedules()
@@ -43,23 +46,24 @@ func _rebuild_schedules() -> void:
 	_clear_timers()
 	if loadout == null:
 		return
-	var new_data := loadout.get_unit_data()
-	for data: UnitData in new_data:
-		if not scheduled_data.has(data):
-			_spawn_unit(data)
+	var new_cards := loadout.get_cards()
+	for card: CardData in new_cards:
+		var data := card.unit_data
+		if not scheduled_cards.has(card):
+			_spawn_unit(card)
 		var timer := Timer.new()
 		timer.wait_time = data.spawn_interval
-		timer.timeout.connect(_spawn_unit.bind(data))
+		timer.timeout.connect(_spawn_unit.bind(card))
 		add_child(timer)
 		spawn_timers.append(timer)
 		timer.start()
-	scheduled_data = new_data
+	scheduled_cards = new_cards
 
 
 func stop() -> void:
 	running = false
 	_clear_timers()
-	scheduled_data.clear()
+	scheduled_cards.clear()
 
 
 func _clear_timers() -> void:
@@ -74,7 +78,8 @@ func _on_loadout_changed() -> void:
 		_rebuild_schedules()
 
 
-func _spawn_unit(data: UnitData) -> void:
+func _spawn_unit(card: CardData) -> void:
+	var data := card.unit_data
 	var active_count: int = active_counts.get(data, 0)
 	if active_count >= data.max_active_instances:
 		return
@@ -87,12 +92,29 @@ func _spawn_unit(data: UnitData) -> void:
 	)
 	spawn_count += 1
 	active_counts[data] = active_count + 1
+	active_units.append(unit)
 	unit.tree_exiting.connect(_on_unit_exiting.bind(unit, data))
 	target.reserve_attack_position(unit, data.attack_profile)
-	unit.configure(data, target)
+	unit.configure(data, target, self, collection.get_star_level(card))
+	_refresh_composition()
 
 
 func _on_unit_exiting(unit: Unit, data: UnitData) -> void:
 	active_counts[data] = maxi(0, int(active_counts.get(data, 0)) - 1)
+	active_units.erase(unit)
+	_refresh_composition()
 	if is_instance_valid(target):
 		target.release_attack_position(unit)
+
+
+func count_active(data: UnitData) -> int:
+	return int(active_counts.get(data, 0))
+
+
+func get_active_units() -> Array[Unit]:
+	return active_units.duplicate()
+
+
+func _refresh_composition() -> void:
+	for unit: Unit in active_units:
+		unit.on_army_changed()

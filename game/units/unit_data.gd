@@ -19,3 +19,4 @@ enum AttackProfile { MELEE, MID, RANGED }
 ])
 @export var projectile_scene: PackedScene
 @export var attack_mode: AttackMode = AttackMode.REPEAT
+@export var behavior: UnitBehavior

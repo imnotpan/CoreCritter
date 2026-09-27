@@ -1,7 +1,11 @@
-[gd_resource type="Resource" script_class="UnitData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="UnitData" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://game/units/unit_data.gd" id="1_data"]
 [ext_resource type="PackedScene" path="res://game/units/projectile.tscn" id="2_projectile"]
+[ext_resource type="Script" path="res://game/units/behaviors/mushroom_behavior.gd" id="3_behavior"]
+
+[sub_resource type="Resource" id="Behavior"]
+script = ExtResource("3_behavior")
 
 [resource]
 script = ExtResource("1_data")
@@ -17,3 +21,4 @@ damage = 2
 color = Color(0.98, 0.55, 0.7, 1)
 body_polygon = PackedVector2Array(-14, -2, -10, -10, 0, -14, 10, -10, 14, -2, 6, 0, 6, 12, -6, 12, -6, 0)
 projectile_scene = ExtResource("2_projectile")
+behavior = SubResource("Behavior")

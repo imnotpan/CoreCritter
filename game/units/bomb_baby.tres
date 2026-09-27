@@ -1,6 +1,10 @@
-[gd_resource type="Resource" script_class="UnitData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="UnitData" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://game/units/unit_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://game/units/behaviors/bomb_baby_behavior.gd" id="2_behavior"]
+
+[sub_resource type="Resource" id="Behavior"]
+script = ExtResource("2_behavior")
 
 [resource]
 script = ExtResource("1_data")
@@ -15,3 +19,4 @@ damage = 55
 color = Color(1, 0.37, 0.28, 1)
 body_polygon = PackedVector2Array(0, -15, 13, 0, 0, 15, -13, 0)
 attack_mode = 1
+behavior = SubResource("Behavior")

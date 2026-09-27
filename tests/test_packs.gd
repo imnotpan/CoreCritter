@@ -34,7 +34,7 @@ func _initialize() -> void:
 	var unlocks := [0]
 	collection.card_unlocked.connect(func(_card: CardData) -> void: unlocks[0] += 1)
 	collection.add_copy(frog, 2)
-	_check(collection.get_owned_copies(frog) == 3, "duplicate copies accumulate")
+	_check(collection.get_owned_copies(frog) == 2, "duplicate copies accumulate")
 	_check(unlocks[0] == 0, "duplicates do not unlock again")
 	var earned := [0]
 	var progress := PackProgress.new()

@@ -24,11 +24,12 @@ var pack_generator := PackGenerator.new()
 func _ready() -> void:
 	OverlayController.configure(get_window())
 	collection.configure(development_cards)
+	collection.set_wallet(game_session.wallet)
 	for card: CardData in development_cards.slice(0, ArmyLoadout.SLOT_COUNT):
 		collection.add_copy(card)
 	loadout.configure(collection, development_cards.slice(0, ArmyLoadout.SLOT_COUNT))
 	game_session.set_loadout(loadout)
-	army_builder.configure(collection, loadout)
+	army_builder.configure(collection, loadout, game_session.wallet)
 	army_button.pressed.connect(army_builder.open)
 	packs_button.pressed.connect(_open_packs)
 	pack_opening.open_requested.connect(_open_pack)

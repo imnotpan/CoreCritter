@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="StarProgressionConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/cards/star_progression_config.gd" id="1_config"]
+
+[resource]
+script = ExtResource("1_config")
+copies_required = PackedInt32Array(2, 3, 5, 8)
+coins_required = PackedInt32Array(50, 100, 200, 400)
