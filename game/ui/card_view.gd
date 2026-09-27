@@ -53,15 +53,15 @@ func _ready() -> void:
 	_show_face(false)
 
 
-func configure(value: CardData, new_card: bool, copies_before: int, copies_after: int, stars: int) -> void:
+func configure(value: CardData, new_card: bool, copies_before: int, copies_after: int, stars: int, during_run: bool = false) -> void:
 	card = value
 	is_new = new_card
 	state = State.HIDDEN
 	name_label.text = value.display_name.to_upper()
 	rarity_label.text = value.rarity_name().to_upper()
 	star_display.text = "★".repeat(maxi(stars, 1))
-	result_badge.text = "NEW CREATURE!" if new_card else "+1 COPY"
-	copies_label.text = "" if new_card else "COPIES %d → %d" % [copies_before, copies_after]
+	result_badge.text = "NEW!" if new_card else "+1 COPY"
+	copies_label.text = ("AVAILABLE NEXT RUN" if during_run else "NEW CREATURE!") if new_card else "COPIES %d → %d" % [copies_before, copies_after]
 	creature_visual.text = value.display_name.substr(0, 1).to_upper()
 	icon.texture = value.icon
 	icon.visible = value.icon != null

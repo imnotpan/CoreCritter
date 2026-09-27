@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CoreData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/core_target/core_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+id = &"giant_egg"
+display_name = "Giant Egg"
+max_hp = 6000.0
+coin_reward = 180
+pack_progress_reward = 0.3
+is_boss = false
+placeholder_color = Color(0.91, 0.85, 0.64, 1)
+visual_scale = 1.05

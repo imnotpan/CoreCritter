@@ -1,6 +1,14 @@
 class_name ArmyBuilder
 extends Control
 
+signal world_requested
+signal start_requested
+signal back_requested
+signal equip_requested(index: int, card: CardData)
+signal upgrade_requested(card: CardData)
+signal debug_copies_requested(card: CardData)
+signal debug_coins_requested
+
 @onready var card_grid: GridContainer = $Panel/CardGrid
 @onready var slot_buttons: Array[Button] = [
 	$Panel/Slots/Slot1, $Panel/Slots/Slot2, $Panel/Slots/Slot3
@@ -8,8 +16,11 @@ extends Control
 @onready var hint_label: Label = $Panel/Hint
 
 var collection: CardCollection
-var loadout: ArmyLoadout
+var loadout: DeckLoadout
 var wallet: Wallet
+var progression: WorldProgression
+var selected_world: WorldData
+var collection_only := false
 var selected_card: CardData
 var detail_label: Label
 var upgrade_button: Button
@@ -19,40 +30,55 @@ var debug_coins_button: Button
 var detail_slot_buttons: Array[Button] = []
 
 
-func configure(card_collection: CardCollection, army_loadout: ArmyLoadout, player_wallet: Wallet) -> void:
+func configure(card_collection: CardCollection, deck: DeckLoadout, player_wallet: Wallet, worlds: WorldProgression) -> void:
 	collection = card_collection
-	loadout = army_loadout
+	loadout = deck
 	wallet = player_wallet
+	progression = worlds
 	_build_detail()
 	collection.cards_changed.connect(_refresh)
 	loadout.changed.connect(_refresh)
 	wallet.coins_changed.connect(func(_coins: int) -> void: _refresh())
 	for index: int in range(slot_buttons.size()):
 		slot_buttons[index].pressed.connect(_on_slot_pressed.bind(index))
+	$Panel/WorldButton.pressed.connect(func() -> void: world_requested.emit())
+	$Panel/StartButton.pressed.connect(func() -> void: start_requested.emit())
+	$Panel/BackButton.pressed.connect(func() -> void: back_requested.emit())
 	_refresh()
 
 
-func open() -> void:
+func open(as_collection: bool = false) -> void:
+	collection_only = as_collection
 	selected_card = null
-	hint_label.text = "Pick a card, then an army slot."
+	hint_label.text = "View cards and upgrades." if collection_only else "COLLECTION — pick a card, then a deck slot."
 	_refresh()
 	visible = true
+
+
+func set_world(world: WorldData) -> void:
+	selected_world = world
+	_refresh()
 
 
 func _refresh() -> void:
 	if collection == null or loadout == null:
 		return
 	var showing_detail := selected_card != null
+	$Panel/Title.text = "COLLECTION" if collection_only else "PRE-RUN / YOUR DECK"
+	$Panel/WorldButton.visible = not collection_only and not showing_detail
+	$Panel/StartButton.visible = not collection_only and not showing_detail
+	$Panel/WorldButton.text = "WORLD: %s" % (selected_world.display_name.to_upper() if selected_world != null else "SELECT")
+	$Panel/StartButton.disabled = collection_only or not loadout.is_valid() or selected_world == null or not progression.worlds.has(selected_world) or not progression.is_unlocked(selected_world) or selected_world.cores.is_empty()
 	card_grid.visible = not showing_detail
-	$Panel/ArmyLabel.visible = not showing_detail
-	$Panel/Slots.visible = not showing_detail
+	$Panel/ArmyLabel.visible = not showing_detail and not collection_only
+	$Panel/Slots.visible = not showing_detail and not collection_only
 	detail_label.visible = showing_detail
-	upgrade_button.visible = showing_detail
+	upgrade_button.visible = showing_detail and collection_only
 	back_button.visible = showing_detail
 	debug_copies_button.visible = showing_detail and OS.is_debug_build()
 	debug_coins_button.visible = showing_detail and OS.is_debug_build()
 	for button: Button in detail_slot_buttons:
-		button.visible = showing_detail
+		button.visible = showing_detail and not collection_only
 	if showing_detail:
 		_refresh_detail()
 		return
@@ -67,17 +93,19 @@ func _refresh() -> void:
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.text = _card_text(card, equipped)
 		button.icon = card.icon if card.icon != null else _placeholder_icon(card.unit_data.color)
-		button.disabled = not collection.is_unlocked(card)
+		button.disabled = not collection.is_unlocked(card) and not collection_only
 		button.modulate = Color(1, 0.93, 0.6) if card == selected_card else Color.WHITE
 		button.pressed.connect(_on_card_pressed.bind(card))
 		card_grid.add_child(button)
 	for index: int in range(slot_buttons.size()):
-		var card: CardData = equipped[index]
+		var card: CardData = equipped[index] if index < equipped.size() else null
 		slot_buttons[index].text = "%d: %s" % [index + 1, card.display_name if card != null else "Empty"]
 
 
 func _card_text(card: CardData, equipped: Array[CardData]) -> String:
 	var selected := "SLOT %d" % (equipped.find(card) + 1) if equipped.has(card) else "AVAILABLE"
+	if collection_only:
+		selected = "OWNED"
 	if not collection.is_unlocked(card):
 		selected = "LOCKED"
 	else:
@@ -97,7 +125,7 @@ func _build_detail() -> void:
 	detail_label.size = Vector2(380, 193)
 	detail_label.add_theme_font_size_override("font_size", 13)
 	panel.add_child(detail_label)
-	for index: int in range(ArmyLoadout.SLOT_COUNT):
+	for index: int in range(DeckLoadout.SLOT_COUNT):
 		var slot_button := Button.new()
 		slot_button.position = Vector2(10 + index * 129, 210)
 		slot_button.size = Vector2(122, 32)
@@ -123,13 +151,13 @@ func _build_detail() -> void:
 	debug_copies_button.position = Vector2(10, 284)
 	debug_copies_button.size = Vector2(180, 27)
 	debug_copies_button.text = "DEBUG +10 COPIES"
-	debug_copies_button.pressed.connect(func() -> void: collection.add_copy(selected_card, 10))
+	debug_copies_button.pressed.connect(func() -> void: debug_copies_requested.emit(selected_card))
 	panel.add_child(debug_copies_button)
 	debug_coins_button = Button.new()
 	debug_coins_button.position = Vector2(200, 284)
 	debug_coins_button.size = Vector2(190, 27)
 	debug_coins_button.text = "DEBUG +1000 COINS"
-	debug_coins_button.pressed.connect(func() -> void: wallet.add_coins(1000))
+	debug_coins_button.pressed.connect(func() -> void: debug_coins_requested.emit())
 	panel.add_child(debug_coins_button)
 
 
@@ -146,25 +174,29 @@ func _refresh_detail() -> void:
 	elif level >= 3:
 		ability = signature
 	var next := "MAX STAR"
-	if level == 1 or level == 3:
+	if level == 0:
+		next = "Unlock from a pack"
+	elif level == 1 or level == 3:
 		next = "%d★ +%d%% damage" % [level + 1, 15 if level == 1 else 20]
 	elif level == 2:
 		next = "3★ %s" % signature
 	elif level == 4:
 		next = "5★ %s" % mastery
 	var cost := collection.get_upgrade_cost(card.id)
-	var cost_text := "MAX STAR" if level >= 5 else "%d copies + %d coins" % [cost.x, cost.y]
+	var cost_text := "LOCKED" if level == 0 else ("MAX STAR" if level >= 5 else "%d copies + %d coins" % [cost.x, cost.y])
 	detail_label.text = "%s  %s  %s\nCopies: %d    Coins: %d\nDamage: %d    Attack: %.1fs\nSpawn: %.1fs    Max active: %d\nProfile: %s\nAbility: %s\nNext: %s\nCost: %s" % [
 		card.display_name, _stars(level), card.rarity_name().to_upper(),
 		collection.get_owned_copies(card), wallet.coins,
 		StarStats.damage(unit.damage, level), unit.attack_interval,
 		unit.spawn_interval, unit.max_active_instances, profile,
 		ability, next, cost_text]
-	upgrade_button.disabled = not collection.can_upgrade(card.id)
+	upgrade_button.disabled = not collection_only or not collection.can_upgrade(card.id)
 	upgrade_button.text = "UPGRADE" if not upgrade_button.disabled else _upgrade_reason(card, cost)
 
 
 func _upgrade_reason(card: CardData, cost: Vector2i) -> String:
+	if not collection.is_unlocked(card):
+		return "LOCKED"
 	if collection.get_star_level(card) >= 5:
 		return "MAX STAR"
 	var missing_copies := maxi(0, cost.x - collection.get_owned_copies(card))
@@ -177,8 +209,14 @@ func _upgrade_reason(card: CardData, cost: Vector2i) -> String:
 
 
 func _on_upgrade_pressed() -> void:
-	if selected_card == null or not collection.upgrade(selected_card.id):
+	if selected_card == null or not collection_only:
 		return
+	upgrade_requested.emit(selected_card)
+	_refresh()
+
+
+func show_upgrade(card: CardData) -> void:
+	selected_card = card
 	var level := collection.get_star_level(selected_card)
 	var behavior := selected_card.unit_data.behavior
 	if level == 3 or level == 5:
@@ -199,17 +237,16 @@ func _placeholder_icon(color: Color) -> Texture2D:
 
 func _on_card_pressed(card: CardData) -> void:
 	selected_card = card
-	hint_label.text = "Choose a slot for %s, or upgrade." % card.display_name
+	hint_label.text = "View %s progression." % card.display_name if collection_only else "Choose a deck slot for %s." % card.display_name
 	_refresh()
 
 
 func _on_slot_pressed(index: int) -> void:
+	if collection_only:
+		return
 	if selected_card == null:
 		hint_label.text = "Pick a card first."
 		return
-	if loadout.equip(index, selected_card):
-		hint_label.text = "%s equipped in slot %d." % [selected_card.display_name, index + 1]
-		selected_card = null
-		_refresh()
-	else:
-		hint_label.text = "That card cannot be equipped."
+	equip_requested.emit(index, selected_card)
+	selected_card = null
+	_refresh()

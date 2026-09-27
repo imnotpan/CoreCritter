@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CoreData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/core_target/core_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://game/core_target/behaviors/shield_core_behavior.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = &"evil_barbecue"
+display_name = "Evil Barbecue"
+max_hp = 11000.0
+coin_reward = 280
+pack_progress_reward = 0.4
+is_boss = false
+behavior_script = ExtResource("2_behavior")
+placeholder_color = Color(0.65, 0.24, 0.16, 1)
+visual_scale = 1.1

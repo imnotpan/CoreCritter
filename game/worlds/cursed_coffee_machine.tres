@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CoreData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/core_target/core_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://game/core_target/behaviors/regeneration_core_behavior.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = &"cursed_coffee_machine"
+display_name = "Cursed Coffee Machine"
+max_hp = 1400.0
+coin_reward = 75
+pack_progress_reward = 0.2
+is_boss = false
+behavior_script = ExtResource("2_behavior")
+placeholder_color = Color(0.52, 0.29, 0.18, 1)
+visual_scale = 1.0

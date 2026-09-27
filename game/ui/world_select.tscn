@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/ui/world_select.gd" id="1_select"]
+
+[node name="WorldSelect" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_select")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Title" type="Label" parent="Panel"]
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 32.0
+theme_override_font_sizes/font_size = 18
+text = "WORLDS"
+
+[node name="Close" type="Button" parent="Panel"]
+offset_left = 326.0
+offset_top = 5.0
+offset_right = 393.0
+offset_bottom = 33.0
+text = "CLOSE"
+
+[node name="WorldList" type="VBoxContainer" parent="Panel"]
+offset_left = 16.0
+offset_top = 46.0
+offset_right = 384.0
+offset_bottom = 200.0
+theme_override_constants/separation = 8
+
+[connection signal="pressed" from="Panel/Close" to="." method="hide"]

@@ -6,15 +6,22 @@ Build an army of strange collectible creatures that automatically attacks increa
 
 ## Core loop
 
-Work
+Prepare world and three-card deck
+→ start run with frozen cards and stars
+→ Work
 → passive combat
 → earn coins
 → damage/destroy core
 → earn card packs
 → open packs
-→ collect or upgrade creatures
-→ improve army loadout
-→ attack harder cores
+→ collect creatures
+→ defeat the world's final boss
+→ view results
+→ upgrade collection and prepare the next deck
+
+New creatures unlocked from packs during combat are AVAILABLE NEXT RUN.
+They never change the current army. Upgrades and deck editing happen outside
+combat. Exiting a run keeps rewards already earned.
 
 ## Passive experience
 

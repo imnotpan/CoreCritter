@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CoreData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/core_target/core_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+id = &"garden_gnome"
+display_name = "Garden Gnome"
+max_hp = 8000.0
+coin_reward = 220
+pack_progress_reward = 0.35
+is_boss = false
+placeholder_color = Color(0.65, 0.39, 0.56, 1)
+visual_scale = 1.0

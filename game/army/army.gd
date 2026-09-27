@@ -1,6 +1,8 @@
 class_name Army
 extends Node
 
+signal spawn_state_changed
+
 const SPAWN_POINTS := [
 	Vector2(34, 91), Vector2(200, 69), Vector2(366, 91),
 	Vector2(366, 232), Vector2(200, 282), Vector2(34, 232),
@@ -12,8 +14,7 @@ const SPAWN_VARIATION := 9.0
 
 var units_parent: Node2D
 var target: CoreTarget
-var loadout: ArmyLoadout
-var collection: CardCollection
+var loadout: RunLoadout
 var spawn_timers: Array[Timer] = []
 var scheduled_cards: Array[CardData] = []
 var spawn_count := 0
@@ -27,14 +28,10 @@ func configure(parent: Node2D, core: CoreTarget) -> void:
 	target = core
 
 
-func set_loadout(army_loadout: ArmyLoadout) -> void:
-	if loadout != null and loadout.changed.is_connected(_on_loadout_changed):
-		loadout.changed.disconnect(_on_loadout_changed)
-	loadout = army_loadout
-	collection = loadout.collection
-	loadout.changed.connect(_on_loadout_changed)
+func set_loadout(run_loadout: RunLoadout) -> void:
 	if running:
-		_rebuild_schedules()
+		return
+	loadout = run_loadout
 
 
 func start() -> void:
@@ -58,12 +55,14 @@ func _rebuild_schedules() -> void:
 		spawn_timers.append(timer)
 		timer.start()
 	scheduled_cards = new_cards
+	spawn_state_changed.emit()
 
 
 func stop() -> void:
 	running = false
 	_clear_timers()
 	scheduled_cards.clear()
+	spawn_state_changed.emit()
 
 
 func _clear_timers() -> void:
@@ -71,11 +70,6 @@ func _clear_timers() -> void:
 		timer.stop()
 		timer.queue_free()
 	spawn_timers.clear()
-
-
-func _on_loadout_changed() -> void:
-	if running:
-		_rebuild_schedules()
 
 
 func _spawn_unit(card: CardData) -> void:
@@ -95,20 +89,37 @@ func _spawn_unit(card: CardData) -> void:
 	active_units.append(unit)
 	unit.tree_exiting.connect(_on_unit_exiting.bind(unit, data))
 	target.reserve_attack_position(unit, data.attack_profile)
-	unit.configure(data, target, self, collection.get_star_level(card))
+	unit.configure(data, target, self, loadout.get_star_level(card))
 	_refresh_composition()
+	spawn_state_changed.emit()
 
 
 func _on_unit_exiting(unit: Unit, data: UnitData) -> void:
 	active_counts[data] = maxi(0, int(active_counts.get(data, 0)) - 1)
 	active_units.erase(unit)
 	_refresh_composition()
+	spawn_state_changed.emit()
 	if is_instance_valid(target):
 		target.release_attack_position(unit)
 
 
 func count_active(data: UnitData) -> int:
 	return int(active_counts.get(data, 0))
+
+
+func get_spawn_state(card: CardData) -> Dictionary:
+	if card == null or card.unit_data == null or loadout == null or not loadout.get_cards().has(card):
+		return {"status": "UNAVAILABLE", "progress": 0.0}
+	if not running:
+		return {"status": "PAUSED", "progress": 0.0}
+	var data := card.unit_data
+	if count_active(data) >= data.max_active_instances:
+		return {"status": "MAX ACTIVE", "progress": 1.0}
+	var index := scheduled_cards.find(card)
+	if index < 0 or index >= spawn_timers.size():
+		return {"status": "READY", "progress": 1.0}
+	var timer := spawn_timers[index]
+	return {"status": "COOLDOWN", "progress": clampf(1.0 - timer.time_left / timer.wait_time, 0.0, 1.0)}
 
 
 func get_active_units() -> Array[Unit]:

@@ -1,4 +1,4 @@
-class_name ArmyLoadout
+class_name DeckLoadout
 extends RefCounted
 
 signal changed
@@ -16,11 +16,21 @@ func configure(card_collection: CardCollection, initial_cards: Array[CardData]) 
 	collection.cards_changed.connect(_on_collection_changed)
 	slots.clear()
 	for card: CardData in initial_cards:
-		if slots.size() >= SLOT_COUNT or not collection.is_unlocked(card) or slots.has(card) or card.unit_data == null:
+		if slots.size() >= SLOT_COUNT or card == null or not collection.is_unlocked(card) or _index_for_id(card.id) >= 0 or card.unit_data == null:
 			continue
 		slots.append(card)
-	assert(slots.size() == SLOT_COUNT, "ArmyLoadout needs three distinct unlocked cards with UnitData.")
 	changed.emit()
+
+
+func is_valid() -> bool:
+	if collection == null or slots.size() != SLOT_COUNT:
+		return false
+	var ids: Array[StringName] = []
+	for card: CardData in slots:
+		if card == null or card.unit_data == null or not collection.is_unlocked(card) or ids.has(card.id):
+			return false
+		ids.append(card.id)
+	return true
 
 
 func get_cards() -> Array[CardData]:
@@ -38,9 +48,9 @@ func get_unit_data() -> Array[UnitData]:
 func equip(slot_index: int, card: CardData) -> bool:
 	if slot_index < 0 or slot_index >= slots.size():
 		return false
-	if not collection.is_unlocked(card) or card.unit_data == null:
+	if card == null or not collection.is_unlocked(card) or card.unit_data == null:
 		return false
-	var previous_index := slots.find(card)
+	var previous_index := _index_for_id(card.id)
 	if previous_index == slot_index:
 		return true
 	if previous_index >= 0:
@@ -48,6 +58,13 @@ func equip(slot_index: int, card: CardData) -> bool:
 	slots[slot_index] = card
 	changed.emit()
 	return true
+
+
+func _index_for_id(card_id: StringName) -> int:
+	for index: int in slots.size():
+		if slots[index] != null and slots[index].id == card_id:
+			return index
+	return -1
 
 
 func _on_collection_changed() -> void:

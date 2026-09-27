@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CoreData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/core_target/core_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://game/core_target/behaviors/shield_core_behavior.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = &"corporate_server"
+display_name = "Corporate Server"
+max_hp = 2500.0
+coin_reward = 120
+pack_progress_reward = 0.25
+is_boss = false
+behavior_script = ExtResource("2_behavior")
+placeholder_color = Color(0.28, 0.53, 0.78, 1)
+visual_scale = 1.05

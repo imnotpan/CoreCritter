@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WorldData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://game/worlds/world_data.gd" id="1_data"]
+[ext_resource type="Resource" path="res://game/worlds/giant_egg.tres" id="2_core"]
+[ext_resource type="Resource" path="res://game/worlds/garden_gnome.tres" id="3_core"]
+[ext_resource type="Resource" path="res://game/worlds/evil_barbecue.tres" id="4_core"]
+[ext_resource type="Resource" path="res://game/worlds/moon_flower.tres" id="5_core"]
+
+[resource]
+script = ExtResource("1_data")
+id = &"backyard"
+display_name = "Backyard"
+description = "The garden has grown hostile."
+cores = Array[CoreData]([ExtResource("2_core"), ExtResource("3_core"), ExtResource("4_core"), ExtResource("5_core")])

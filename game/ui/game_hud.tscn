@@ -1,0 +1,144 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://game/ui/game_hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://game/ui/active_card_strip.gd" id="2_strip"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
+bg_color = Color(0.055, 0.105, 0.12, 0.82)
+content_margin_left = 5.0
+content_margin_top = 3.0
+content_margin_right = 5.0
+content_margin_bottom = 3.0
+
+[node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="Top" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 48.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="Rows" type="VBoxContainer" parent="Top"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Identity" type="HBoxContainer" parent="Top/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="WorldProgress" type="Label" parent="Top/Rows/Identity"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.99, 0.85, 0.51, 1)
+theme_override_font_sizes/font_size = 13
+text = "OFFICE 1/4"
+
+[node name="CoreName" type="Label" parent="Top/Rows/Identity"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "OFFICE PRINTER"
+clip_text = true
+theme_override_colors/font_color = Color(0.96, 0.96, 0.87, 1)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 2
+
+[node name="Boss" type="Label" parent="Top/Rows/Identity"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.52, 0.42, 1)
+theme_override_font_sizes/font_size = 10
+text = "BOSS"
+
+[node name="HealthRow" type="HBoxContainer" parent="Top/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="CoreHealth" type="ProgressBar" parent="Top/Rows/HealthRow"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="HealthPercent" type="Label" parent="Top/Rows/HealthRow"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.96, 0.87, 1)
+theme_override_font_sizes/font_size = 11
+text = "100%"
+horizontal_alignment = 2
+
+[node name="Bottom" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -91.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="Rows" type="VBoxContainer" parent="Bottom"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="ActiveCardStrip" type="HBoxContainer" parent="Bottom/Rows"]
+custom_minimum_size = Vector2(0, 55)
+layout_mode = 2
+script = ExtResource("2_strip")
+
+[node name="Footer" type="HBoxContainer" parent="Bottom/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Coins" type="Label" parent="Bottom/Rows/Footer"]
+custom_minimum_size = Vector2(66, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.47, 1)
+theme_override_font_sizes/font_size = 11
+text = "COINS 0"
+
+[node name="Packs" type="Label" parent="Bottom/Rows/Footer"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.91, 0.88, 1)
+theme_override_font_sizes/font_size = 11
+text = "PACKS 0"
+
+[node name="PackProgress" type="Label" parent="Bottom/Rows/Footer"]
+custom_minimum_size = Vector2(49, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.8, 0.79, 1)
+theme_override_font_sizes/font_size = 9
+text = "PACK 0%"
+
+[node name="Spacer" type="Control" parent="Bottom/Rows/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="PacksButton" type="Button" parent="Bottom/Rows/Footer"]
+custom_minimum_size = Vector2(62, 25)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "PACKS"
+
+[node name="PauseButton" type="Button" parent="Bottom/Rows/Footer"]
+custom_minimum_size = Vector2(62, 25)
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "OPTIONS"

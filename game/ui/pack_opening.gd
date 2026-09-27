@@ -48,7 +48,7 @@ func set_pack_count(count: int) -> void:
 	open_button.disabled = count <= 0
 
 
-func show_results(pack_name: String, cards: Array[CardData], new_flags: Array[bool], copies_before: Array[int], copies_after: Array[int], stars: Array[int]) -> void:
+func show_results(pack_name: String, cards: Array[CardData], new_flags: Array[bool], copies_before: Array[int], copies_after: Array[int], stars: Array[int], during_run: bool = false) -> void:
 	title_label.text = pack_name
 	_clear_cards()
 	open_button.visible = false
@@ -59,7 +59,7 @@ func show_results(pack_name: String, cards: Array[CardData], new_flags: Array[bo
 		var view: CardView = CARD_SCENE.instantiate()
 		cards_row.add_child(view)
 		view.position = Vector2(7.0 + index * 126.0, 0.0)
-		view.configure(cards[index], new_flags[index], copies_before[index], copies_after[index], stars[index])
+		view.configure(cards[index], new_flags[index], copies_before[index], copies_after[index], stars[index], during_run)
 		view.reveal_requested.connect(_reveal_card)
 		view.reveal_finished.connect(_on_reveal_finished)
 		view.presentation_cue.connect(func(cue: StringName) -> void: presentation_cue.emit(cue))

@@ -23,6 +23,12 @@ func start() -> void:
 	_schedule_next()
 
 
+func stop() -> void:
+	spawn_timer.stop()
+	if is_instance_valid(active_fly):
+		active_fly.queue_free()
+
+
 func _schedule_next() -> void:
 	spawn_timer.start(randf_range(20.0, 40.0))
 

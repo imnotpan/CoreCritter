@@ -18,4 +18,11 @@ if rg -n 'SCRIPT ERROR|ERROR: Failed to load|ERROR: Parse Error|ERROR: Compile E
   echo "Godot reported script errors." >&2
   exit 1
 fi
+for suite in packs progression worlds runs; do
+  "$GODOT" --headless --path . --log-file "/private/tmp/corecritters-test-$suite.log" --script "tests/test_$suite.gd"
+  if rg -n 'SCRIPT ERROR|ERROR: Failed to load|ERROR: Parse Error|ERROR: Compile Error' "/private/tmp/corecritters-test-$suite.log"; then
+    echo "Godot reported errors in $suite tests." >&2
+    exit 1
+  fi
+done
 echo "Validation passed."

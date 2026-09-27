@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CoreData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/core_target/core_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://game/core_target/behaviors/boss_core_behavior.gd" id="2_behavior"]
+
+[resource]
+script = ExtResource("1_data")
+id = &"moon_flower"
+display_name = "The Moon Flower"
+max_hp = 18000.0
+coin_reward = 500
+pack_progress_reward = 0.75
+is_boss = true
+behavior_script = ExtResource("2_behavior")
+placeholder_color = Color(0.68, 0.53, 0.88, 1)
+visual_scale = 1.4
