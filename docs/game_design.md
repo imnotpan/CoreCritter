@@ -30,7 +30,16 @@ The game must work well when ignored.
 A weak army progresses slowly.
 A strong army progresses quickly.
 
-The player never loses progress because they were focused on work.
+The player must never lose permanent progress for ignoring the game. Units may
+be damaged, debuffed, disabled or KO'd; Army automatically replaces them after a
+short recovery delay. An army wipe never ends the run or resets Core HP. Cards,
+upgrades and permanent progression are never lost. Weak builds and inattention
+mean slower progression; strong builds and optional interaction mean faster progress.
+
+The game plays itself, but regularly offers optional opportunities to intervene.
+Ignoring it for minutes or an entire run segment must remain safe. Aim for mostly
+automatic play, occasional micro interactions and some strategic choices, without
+literal percentage quotas or mandatory interaction every few seconds.
 
 ## Interaction
 
@@ -41,9 +50,19 @@ Primary:
 - upgrades
 
 Secondary:
+- telegraphed Core attacks and temporary clickable hazards (expire automatically)
 - optional clickable threats
+- optional active card commands with long cooldowns and a quiet READY state
+- temporary run boons: one pending choice of three after non-final Cores; gameplay
+  continues until the player chooses, and all effects disappear when the run ends
 - cosmetics
 - collection browsing
+
+The current three-card RunLoadout and captured stars remain immutable. Commands
+accelerate combat without swapping cards. Boons modify only runtime run effects,
+never UnitData assets, CardCollection, permanent stars or the next-run deck.
+Every harmful Core attack gives a readable warning before resolving; reacting,
+cleaning hazards and freeing trapped units are always optional.
 
 ## Avoid
 

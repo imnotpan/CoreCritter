@@ -69,6 +69,9 @@ func _ready() -> void:
 	flow.settings_requested.connect(flow.show_settings)
 	flow.continue_requested.connect(_show_pre_run)
 	flow.exit_requested.connect(game_session.exit_run)
+	hud.configure_interactions(game_session)
+	hud.boon_requested.connect(game_session.choose_boon)
+	hud.active_cards.command_requested.connect(game_session.request_command)
 	hud.packs_button.pressed.connect(_open_packs)
 	hud.pause_button.pressed.connect(flow.show_pause)
 	pack_opening.open_requested.connect(_open_pack)
@@ -132,7 +135,7 @@ func _start_run() -> void:
 		return
 	army_builder.hide()
 	world_select.hide()
-	hud.active_cards.configure(game_session.run.loadout, game_session.army)
+	hud.active_cards.configure(game_session.run.loadout, game_session.army, game_session.commands)
 	hud.visible = true
 	flow.show_active_run()
 	_show_world_progress()
@@ -198,6 +201,10 @@ func _on_card_unlocked(card: CardData) -> void:
 func _setup_debug() -> void:
 	if not OS.is_debug_build():
 		return
+	var runtime := RunDebugTools.new()
+	runtime.session = game_session
+	game_session.add_child(runtime)
+	hud.debug_requested.connect(runtime.execute)
 	debug_pack_button.pressed.connect(func() -> void: game_session.pack_inventory.add_pack())
 	debug_destroy_button.pressed.connect(game_session.debug_destroy_core)
 	debug_unlock_button.pressed.connect(game_session.debug_unlock_next_world)

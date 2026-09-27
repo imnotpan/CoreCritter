@@ -14,3 +14,4 @@ is_boss = true
 behavior_script = ExtResource("2_behavior")
 placeholder_color = Color(0.77, 0.22, 0.31, 1)
 visual_scale = 1.4
+interaction = 4

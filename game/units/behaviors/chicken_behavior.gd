@@ -3,6 +3,8 @@ extends UnitBehavior
 
 
 func _init() -> void:
+	command_name = "STAMPEDE"
+	command_cooldown = 60.0
 	signature_name = "Frenzy"
 	mastery_name = "Swarm Frenzy"
 
@@ -21,3 +23,7 @@ func on_army_changed(unit) -> void:
 	var bonus_per := 0.07 if mastered else 0.05
 	var cap := 0.4 if mastered else 0.25
 	unit.army_speed_bonus = minf(cap, count * bonus_per)
+
+
+func execute_command(army: Army, card: CardData) -> bool:
+	return army.spawn_temporary(card, 4)

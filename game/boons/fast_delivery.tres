@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="BoonData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/boons/boon_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"fast_delivery"
+display_name = "FAST DELIVERY"
+description = "All spawn intervals -15%."
+effect = 2
+value = 0.15
+creature_id = &""

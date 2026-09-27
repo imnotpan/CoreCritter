@@ -15,3 +15,11 @@ func on_tick(_unit, _delta: float, _at_position: bool) -> void:
 
 func on_army_changed(_unit) -> void:
 	pass
+
+
+var command_name := ""
+var command_cooldown := 60.0
+
+
+func execute_command(_army: Army, _card: CardData) -> bool:
+	return false

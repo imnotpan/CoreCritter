@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="CoreData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="CoreData" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://game/core_target/core_data.gd" id="1_data"]
+
+[ext_resource type="Script" path="res://game/core_target/behaviors/core_behavior.gd" id="2_behavior"]
 
 [resource]
 script = ExtResource("1_data")
@@ -12,3 +14,5 @@ pack_progress_reward = 0.15
 is_boss = false
 placeholder_color = Color(0.72, 0.36, 0.48, 1)
 visual_scale = 1.0
+behavior_script = ExtResource("2_behavior")
+interaction = 1

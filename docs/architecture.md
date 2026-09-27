@@ -8,7 +8,13 @@ RUN_RESULTS → PRE_RUN. Collection and upgrades are available from the menu.
 Permanent CardCollection progression and the editable next-run DeckLoadout
 are saved through SaveData. Starting a run creates a sealed RunLoadout containing
 three distinct unlocked CardData references and captured star levels.
-Army and the active card HUD consume only RunLoadout.
+Army and the active card HUD consume only RunLoadout. CardCommands tracks optional
+command cooldowns and delegates effects to the existing UnitBehavior Resources.
+Units own runtime HP/status durations; Army owns KO recovery slots and spawning.
+CoreBehavior requests telegraphed CoreInteraction nodes through GameSession.
+RunSession owns a bounded pending boon choice; BoonData applies run-only Army
+modifiers. Ending a run clears commands, interactions and modifiers, leaving
+permanent collection and saved data untouched.
 
 GameSession owns combat nodes and an active RunSession. RunSession owns the
 selected world, core index and reward summary. WorldProgression owns persistent

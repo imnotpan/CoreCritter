@@ -10,3 +10,9 @@ extends Resource
 @export var behavior_script: Script
 @export var placeholder_color: Color = Color(0.72, 0.36, 0.48)
 @export var visual_scale: float = 1.0
+
+
+enum Interaction { NONE, PAPER_JAM, COFFEE_SPILL, FIREWALL_NODES, GRAB }
+@export var interaction: Interaction = Interaction.NONE
+@export var interaction_interval := 45.0
+@export var first_interaction_delay := 10.0

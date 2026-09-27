@@ -47,3 +47,81 @@ func show_core_health(current: float, maximum: float) -> void:
 	core_health.max_value = maxf(maximum, 1.0)
 	core_health.value = current
 	health_percent.text = "%d%%" % roundi(100.0 * current / maxf(maximum, 1.0))
+
+
+var boon_button: Button
+var boon_choices: PanelContainer
+var regroup_label: Label
+var session: GameSession
+
+signal boon_requested(boon: BoonData)
+signal debug_requested(action: StringName)
+
+
+func configure_interactions(game: GameSession) -> void:
+	session = game
+	boon_button = Button.new()
+	boon_button.text = "BOON READY"
+	boon_button.add_theme_font_size_override("font_size", 9)
+	boon_button.position = Vector2(8, 52)
+	add_child(boon_button)
+	boon_button.pressed.connect(func() -> void: boon_choices.visible = not boon_choices.visible)
+	boon_choices = PanelContainer.new()
+	boon_choices.position = Vector2(8, 78)
+	boon_choices.custom_minimum_size = Vector2(384, 0)
+	add_child(boon_choices)
+	regroup_label = Label.new()
+	regroup_label.position = Vector2(115, 54)
+	regroup_label.text = "ARMY DOWN / REGROUPING..."
+	regroup_label.add_theme_font_size_override("font_size", 10)
+	regroup_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(regroup_label)
+	game.boon_changed.connect(_refresh_boons)
+	game.army.spawn_state_changed.connect(_refresh_regroup)
+	_refresh_boons()
+	_refresh_regroup()
+	if OS.is_debug_build():
+		_add_run_debug()
+
+
+func _refresh_regroup() -> void:
+	regroup_label.visible = session.run != null and session.army.running and session.army.get_active_units().is_empty()
+
+
+func _refresh_boons() -> void:
+	boon_choices.hide()
+	for child: Node in boon_choices.get_children():
+		boon_choices.remove_child(child)
+		child.queue_free()
+	var options: Array[BoonData] = []
+	if session.run != null:
+		options.assign(session.run.pending_boons)
+	boon_button.visible = not options.is_empty()
+	var column := VBoxContainer.new()
+	boon_choices.add_child(column)
+	for boon: BoonData in options:
+		var button := Button.new()
+		button.text = boon.display_name + " — " + boon.description
+		button.add_theme_font_size_override("font_size", 10)
+		button.pressed.connect(func() -> void: boon_requested.emit(boon))
+		column.add_child(button)
+	var later := Button.new()
+	later.text = "LATER"
+	later.pressed.connect(boon_choices.hide)
+	column.add_child(later)
+
+
+func _add_run_debug() -> void:
+	var menu := MenuButton.new()
+	menu.text = "DEBUG"
+	menu.add_theme_font_size_override("font_size", 9)
+	menu.position = Vector2(344, 52)
+	add_child(menu)
+	var actions: Array[StringName] = [
+		&"damage_unit", &"ko_unit", &"ko_all", &"core_ability", &"threat", &"reset_commands",
+		&"frog", &"slug", &"chicken", &"wizard", &"bomb_baby", &"mushroom", &"grant_boon",
+		&"frog_business", &"chicken_union", &"fast_delivery", &"health_plan", &"overtime",
+	]
+	for action: StringName in actions:
+		menu.get_popup().add_item(String(action).replace("_", " ").to_upper())
+	menu.get_popup().id_pressed.connect(func(index: int) -> void: debug_requested.emit(actions[index]))

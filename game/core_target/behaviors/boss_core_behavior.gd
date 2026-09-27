@@ -6,6 +6,7 @@ var elapsed := 0.0
 
 
 func process_behavior(core: CoreTarget, delta: float) -> void:
+	super.process_behavior(core, delta)
 	if not shield_triggered:
 		return
 	elapsed += delta

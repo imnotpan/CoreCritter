@@ -3,6 +3,8 @@ extends UnitBehavior
 
 
 func _init() -> void:
+	command_name = "SPORE PARTY"
+	command_cooldown = 60.0
 	signature_name = "Spore Boost"
 	mastery_name = "Super Spores"
 
@@ -19,3 +21,7 @@ func on_tick(unit, delta: float, _at_position: bool) -> void:
 	for ally: Unit in unit.army.get_active_units():
 		if ally != unit and ally.global_position.distance_to(unit.global_position) <= 95.0:
 			ally.apply_spore_bonus(bonus, duration)
+
+
+func execute_command(army: Army, card: CardData) -> bool:
+	return army.spore_party()

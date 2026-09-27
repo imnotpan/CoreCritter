@@ -30,7 +30,7 @@ func stop() -> void:
 
 
 func _schedule_next() -> void:
-	spawn_timer.start(randf_range(20.0, 40.0))
+	spawn_timer.start(randf_range(55.0, 90.0))
 
 
 func _spawn_fly() -> void:

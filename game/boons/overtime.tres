@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="BoonData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/boons/boon_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"overtime"
+display_name = "OVERTIME"
+description = "All units +10% attack speed."
+effect = 4
+value = 0.1
+creature_id = &""

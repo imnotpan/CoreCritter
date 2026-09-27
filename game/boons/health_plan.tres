@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="BoonData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/boons/boon_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"health_plan"
+display_name = "HEALTH PLAN"
+description = "All units +20% max HP."
+effect = 3
+value = 0.2
+creature_id = &""

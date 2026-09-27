@@ -1,6 +1,7 @@
 class_name GameSession
 extends Node2D
 
+signal boon_changed
 signal core_destroyed(data: CoreData)
 signal core_restored(data: CoreData)
 signal run_finished(run: RunSession)
@@ -20,6 +21,8 @@ var world_progression := WorldProgression.new()
 var transitioning := false
 var transition_version := 0
 var run: RunSession
+var commands := CardCommands.new()
+var interaction: CoreInteraction
 
 
 func _ready() -> void:
@@ -31,11 +34,14 @@ func _ready() -> void:
 	threats.configure(units)
 	threats.fly_clicked.connect(_on_fly_clicked)
 	core.destroyed.connect(_on_core_destroyed)
+	core.interaction_requested.connect(_begin_interaction)
+	core.set_process(false)
 
 
 func _process(delta: float) -> void:
 	if run != null:
 		pack_progress.advance_time(delta)
+		commands.advance(delta)
 
 
 func start_run(world: WorldData, deck: DeckLoadout) -> bool:
@@ -48,7 +54,10 @@ func start_run(world: WorldData, deck: DeckLoadout) -> bool:
 	run.world = world
 	run.loadout = snapshot
 	core.configure(run.get_current_core())
+	army.reset_run_effects()
 	army.set_loadout(snapshot)
+	commands.configure(snapshot, army)
+	core.set_process(true)
 	army.start()
 	threats.start()
 	core_restored.emit(core.data)
@@ -67,9 +76,15 @@ func exit_run() -> void:
 		return
 	transition_version += 1
 	transitioning = false
+	_clear_interaction()
+	core.set_process(false)
 	army.stop()
 	threats.stop()
 	_clear_units()
+	army.reset_run_effects()
+	commands.clear()
+	run.clear_boons()
+	boon_changed.emit()
 	var finished := run
 	run = null
 	run_finished.emit(finished)
@@ -85,6 +100,7 @@ func complete_run() -> bool:
 
 
 func _clear_units() -> void:
+	army.clear_units()
 	for unit: Node in units.get_children():
 		unit.queue_free()
 
@@ -98,7 +114,11 @@ func _on_core_destroyed(data: CoreData) -> void:
 	if run == null or transitioning or run.get_current_core() != data:
 		return
 	transitioning = true
+	_clear_interaction()
 	army.stop()
+	if run.current_core_index < run.world.cores.size() - 1:
+		run.offer_boon()
+		boon_changed.emit()
 	wallet.add_coins(data.coin_reward)
 	run.coins_earned += data.coin_reward
 	run.cores_destroyed += 1
@@ -143,3 +163,31 @@ func debug_complete_world() -> void:
 	while run != null and run == original:
 		debug_destroy_core()
 		await get_tree().create_timer(2.6).timeout
+
+
+func _begin_interaction(kind: CoreData.Interaction) -> void:
+	if run == null or transitioning or kind == CoreData.Interaction.NONE or is_instance_valid(interaction):
+		return
+	var event := CoreInteraction.new()
+	add_child(event)
+	if not event.configure(kind, army, core):
+		event.queue_free()
+		return
+	interaction = event
+	event.finished.connect(func() -> void: interaction = null)
+
+
+func _clear_interaction() -> void:
+	if is_instance_valid(interaction):
+		interaction.finish()
+
+
+func request_command(card: CardData) -> bool:
+	return commands.activate(card) if run != null and not transitioning else false
+
+
+func choose_boon(boon: BoonData) -> bool:
+	if run == null or not run.choose_boon(boon, army):
+		return false
+	boon_changed.emit()
+	return true

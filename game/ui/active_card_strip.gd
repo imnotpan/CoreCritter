@@ -5,6 +5,9 @@ const INK := Color("152125")
 const CREAM := Color("f7efd5")
 const MUTED := Color("aebbbb")
 
+signal command_requested(card: CardData)
+
+var commands: CardCommands
 var loadout: RunLoadout
 var army: Army
 var slots: Array[Dictionary] = []
@@ -22,7 +25,8 @@ func _ready() -> void:
 	state_timer.start()
 
 
-func configure(run_loadout: RunLoadout, player_army: Army) -> void:
+func configure(run_loadout: RunLoadout, player_army: Army, card_commands: CardCommands = null) -> void:
+	commands = card_commands
 	loadout = run_loadout
 	army = player_army
 	if not army.spawn_state_changed.is_connected(_refresh_states):
@@ -72,6 +76,11 @@ func _add_slot(index: int) -> void:
 	stars.add_theme_font_size_override("font_size", 11)
 	stars.add_theme_color_override("font_color", Color("ffda80"))
 	column.add_child(stars)
+	var command := Button.new()
+	command.add_theme_font_size_override("font_size", 9)
+	command.custom_minimum_size.y = 20
+	command.pressed.connect(func() -> void: command_requested.emit(loadout.get_card(index)))
+	column.add_child(command)
 	var bottom := HBoxContainer.new()
 	bottom.add_theme_constant_override("separation", 3)
 	column.add_child(bottom)
@@ -86,7 +95,7 @@ func _add_slot(index: int) -> void:
 	progress.show_percentage = false
 	progress.max_value = 1.0
 	bottom.add_child(progress)
-	slots.append({"panel": panel, "style": style, "icon": icon, "placeholder": placeholder, "name": name, "stars": stars, "state": state, "progress": progress})
+	slots.append({"command": command, "panel": panel, "style": style, "icon": icon, "placeholder": placeholder, "name": name, "stars": stars, "state": state, "progress": progress})
 
 
 func _refresh_cards() -> void:
@@ -118,12 +127,15 @@ func _refresh_states() -> void:
 	for index: int in slots.size():
 		var slot: Dictionary = slots[index]
 		var card: CardData = cards[index] if index < cards.size() else null
-		var spawn: Dictionary = army.get_spawn_state(card)
+		var spawn: Dictionary = commands.get_state(card) if commands != null else army.get_spawn_state(card)
+		var command: Button = slot.command
+		command.text = spawn.get("name", "")
+		command.disabled = commands == null or spawn.status != "READY" or not army.running
 		var state: Label = slot.state
 		var progress: ProgressBar = slot.progress
 		state.text = spawn.status
 		progress.value = spawn.progress
-		progress.visible = spawn.status == "COOLDOWN"
+		progress.visible = spawn.status != "READY" and spawn.status != "UNAVAILABLE"
 		var panel: PanelContainer = slot.panel
 		panel.modulate.a = 0.58 if spawn.status == "UNAVAILABLE" else 1.0
 

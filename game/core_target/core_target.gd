@@ -1,6 +1,7 @@
 class_name CoreTarget
 extends Node2D
 
+signal interaction_requested(kind: CoreData.Interaction)
 signal destroyed(data: CoreData)
 signal health_changed(current: float, maximum: float)
 
@@ -24,6 +25,7 @@ var max_hp: float = 100.0
 var current_hp: float = 100.0
 var behavior: CoreBehavior
 var shield_remaining := 0.0
+var firewall_nodes := 0
 var hit_tween: Tween
 var damage_tween: Tween
 var reserved_positions: Dictionary = {}
@@ -56,6 +58,7 @@ func configure(core_data: CoreData) -> void:
 	max_hp = maxf(1.0, data.max_hp)
 	behavior = data.behavior_script.new() as CoreBehavior if data.behavior_script != null else null
 	shield_remaining = 0.0
+	firewall_nodes = 0
 	body.color = data.placeholder_color
 	center.color = data.placeholder_color.lightened(0.35)
 	name_label.text = data.display_name.to_upper()
@@ -71,6 +74,7 @@ func take_damage(amount: int) -> void:
 	if current_hp <= 0.0:
 		return
 	var effective := float(amount) * (0.5 if shield_remaining > 0.0 else 1.0)
+	effective *= 0.7 if firewall_nodes > 0 else 1.0
 	current_hp = maxf(0.0, current_hp - effective)
 	_update_display()
 	_show_hit(ceili(effective))
@@ -219,3 +223,16 @@ func _show_feedback(message: String, color: Color) -> void:
 	damage_tween = create_tween().set_parallel(true)
 	damage_tween.tween_property(damage_label, "position:y", -105.0, 0.45)
 	damage_tween.tween_property(damage_label, "modulate:a", 0.0, 0.45)
+
+
+func show_command_feedback(message: String, color: Color) -> void:
+	_show_feedback(message, color)
+	var ring := Polygon2D.new()
+	ring.color = Color(color, 0.65)
+	for index: int in 24:
+		ring.polygon.append(Vector2.RIGHT.rotated(TAU * index / 24.0) * 35.0)
+	add_child(ring)
+	var tween := ring.create_tween().set_parallel(true)
+	tween.tween_property(ring, "scale", Vector2(3, 3), 0.6)
+	tween.tween_property(ring, "modulate:a", 0.0, 0.6)
+	tween.chain().tween_callback(ring.queue_free)
