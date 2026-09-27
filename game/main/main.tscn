@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://game/main/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://game/session/game_session.tscn" id="2_session"]
@@ -11,10 +11,13 @@
 [ext_resource type="Resource" path="res://game/cards/bomb_baby.tres" id="9_bomb"]
 [ext_resource type="Resource" path="res://game/cards/mushroom.tres" id="10_mushroom"]
 [ext_resource type="PackedScene" path="res://game/ui/army_builder.tscn" id="11_builder"]
+[ext_resource type="Resource" path="res://game/packs/basic_pack.tres" id="12_pack"]
+[ext_resource type="PackedScene" path="res://game/ui/pack_opening.tscn" id="13_pack_opening"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
 development_cards = Array[ExtResource("4_card_data")]([ExtResource("5_frog"), ExtResource("6_slug"), ExtResource("7_chicken"), ExtResource("8_wizard"), ExtResource("9_bomb"), ExtResource("10_mushroom")])
+basic_pack = ExtResource("12_pack")
 
 [node name="GameSession" parent="." instance=ExtResource("2_session")]
 
@@ -38,6 +41,39 @@ offset_bottom = 33.0
 theme_override_font_sizes/font_size = 13
 text = "ARMY"
 
+[node name="PackProgress" type="Label" parent="UI"]
+offset_left = 10.0
+offset_top = 38.0
+offset_right = 110.0
+offset_bottom = 61.0
+theme_override_font_sizes/font_size = 13
+text = "PACK 0%"
+
+[node name="PackCount" type="Label" parent="UI"]
+offset_left = 115.0
+offset_top = 38.0
+offset_right = 220.0
+offset_bottom = 61.0
+theme_override_font_sizes/font_size = 13
+text = "PACKS x0"
+
+[node name="DebugPackButton" type="Button" parent="UI"]
+visible = false
+offset_left = 235.0
+offset_top = 38.0
+offset_right = 320.0
+offset_bottom = 65.0
+theme_override_font_sizes/font_size = 10
+text = "+1 PACK"
+
+[node name="PacksButton" type="Button" parent="UI"]
+offset_left = 326.0
+offset_top = 38.0
+offset_right = 393.0
+offset_bottom = 65.0
+theme_override_font_sizes/font_size = 13
+text = "PACKS"
+
 [node name="StatusLabel" type="Label" parent="UI"]
 visible = false
 offset_left = 80.0
@@ -50,3 +86,5 @@ text = "CORE DESTROYED"
 horizontal_alignment = 1
 
 [node name="ArmyBuilder" parent="UI" instance=ExtResource("11_builder")]
+
+[node name="PackOpening" parent="UI" instance=ExtResource("13_pack_opening")]

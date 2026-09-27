@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PackData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/packs/pack_data.gd" id="1_pack"]
+
+[resource]
+script = ExtResource("1_pack")
+id = &"basic"
+display_name = "BASIC PACK"
+cards_per_pack = 3
+common_weight = 70.0
+uncommon_weight = 25.0
+rare_weight = 5.0
+guarantee_new_card_if_available = true

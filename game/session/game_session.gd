@@ -10,14 +10,26 @@ signal core_restored
 @onready var threats: Threats = $Threats
 @onready var wallet: Wallet = $Wallet
 
+@export var seconds_per_pack: float = 600.0
+@export var core_destroyed_progress_bonus: float = 0.25
+
+var pack_progress := PackProgress.new()
+var pack_inventory := PackInventory.new()
 var resetting := false
 
 
 func _ready() -> void:
+	pack_progress.seconds_per_pack = seconds_per_pack
+	pack_progress.core_destroyed_progress_bonus = core_destroyed_progress_bonus
+	pack_progress.packs_earned.connect(pack_inventory.add_pack)
 	army.configure(units, core)
 	threats.configure(units)
 	threats.fly_clicked.connect(_on_fly_clicked)
 	core.destroyed.connect(_on_core_destroyed)
+
+
+func _process(delta: float) -> void:
+	pack_progress.advance_time(delta)
 
 
 func start() -> void:
@@ -39,6 +51,7 @@ func _on_core_destroyed() -> void:
 	resetting = true
 	army.stop()
 	wallet.add_coins(50)
+	pack_progress.on_core_destroyed()
 	for unit: Node in units.get_children():
 		unit.queue_free()
 	core_destroyed.emit()

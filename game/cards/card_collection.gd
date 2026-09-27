@@ -2,27 +2,28 @@ class_name CardCollection
 extends RefCounted
 
 signal cards_changed
+signal card_unlocked(card: CardData)
 
 var cards: Array[CardData] = []
-var unlocked_ids: Dictionary = {}
+var owned_copies: Dictionary = {}
 
 
 func configure(available_cards: Array[CardData]) -> void:
 	cards = available_cards.duplicate()
-	unlocked_ids.clear()
+	owned_copies.clear()
 	cards_changed.emit()
 
 
 func get_owned_cards() -> Array[CardData]:
+	return get_unlocked_cards()
+
+
+func get_unlocked_cards() -> Array[CardData]:
 	var owned: Array[CardData] = []
 	for card: CardData in cards:
 		if is_unlocked(card):
 			owned.append(card)
 	return owned
-
-
-func get_unlocked_cards() -> Array[CardData]:
-	return get_owned_cards()
 
 
 func get_locked_cards() -> Array[CardData]:
@@ -34,18 +35,20 @@ func get_locked_cards() -> Array[CardData]:
 
 
 func is_unlocked(card: CardData) -> bool:
-	return card != null and cards.has(card) and unlocked_ids.has(card.id)
+	return get_owned_copies(card) > 0
 
 
-func unlock(card: CardData) -> void:
-	if card == null or not cards.has(card) or is_unlocked(card):
+func get_owned_copies(card: CardData) -> int:
+	if card == null or not cards.has(card):
+		return 0
+	return int(owned_copies.get(card.id, 0))
+
+
+func add_copy(card: CardData, amount: int = 1) -> void:
+	if card == null or not cards.has(card) or amount <= 0:
 		return
-	unlocked_ids[card.id] = true
-	cards_changed.emit()
-
-
-func lock(card: CardData) -> void:
-	if card == null or not is_unlocked(card):
-		return
-	unlocked_ids.erase(card.id)
+	var was_locked := not is_unlocked(card)
+	owned_copies[card.id] = get_owned_copies(card) + amount
+	if was_locked:
+		card_unlocked.emit(card)
 	cards_changed.emit()

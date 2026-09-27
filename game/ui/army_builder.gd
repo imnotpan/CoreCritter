@@ -56,6 +56,8 @@ func _card_text(card: CardData, equipped: Array[CardData]) -> String:
 	var selected := "SLOT %d" % (equipped.find(card) + 1) if equipped.has(card) else "AVAILABLE"
 	if not collection.is_unlocked(card):
 		selected = "LOCKED"
+	else:
+		selected = "x%d · %s" % [collection.get_owned_copies(card), selected]
 	var unit := card.unit_data
 	var profile: String = UnitData.AttackProfile.keys()[unit.attack_profile]
 	return "%s · %s · %s\nDMG %d  ATK %.1fs\nSPAWN %.1fs  MAX %d  %s" % [
