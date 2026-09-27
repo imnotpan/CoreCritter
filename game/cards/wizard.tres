@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/cards/card_data.gd" id="1_card"]
+[ext_resource type="Resource" path="res://game/units/wizard.tres" id="2_unit"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"wizard"
+display_name = "Wizard"
+unit_data = ExtResource("2_unit")
+rarity = 1
+description = "Heavy ranged magic."

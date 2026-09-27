@@ -1,0 +1,36 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/threats/fly.gd" id="1_fly"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 13.0
+
+[node name="Fly" type="Area2D"]
+z_index = 10
+script = ExtResource("1_fly")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.18, 0.13, 0.22, 1)
+polygon = PackedVector2Array(-10, -2, -4, -7, 0, -3, 4, -7, 10, -2, 4, 3, 0, 1, -4, 3)
+
+[node name="Eyes" type="Polygon2D" parent="Body"]
+color = Color(1, 0.9, 0.35, 1)
+polygon = PackedVector2Array(-4, -1, -2, -1, -2, 1, -4, 1, 2, -1, 4, -1, 4, 1, 2, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")
+
+[node name="Lifetime" type="Timer" parent="."]
+wait_time = 30.0
+one_shot = true
+
+[node name="SplatLabel" type="Label" parent="."]
+visible = false
+offset_left = -30.0
+offset_top = -20.0
+offset_right = 30.0
+offset_bottom = 0.0
+theme_override_colors/font_color = Color(1, 0.8, 0.32, 1)
+theme_override_font_sizes/font_size = 14
+text = "SPLAT!"
+horizontal_alignment = 1

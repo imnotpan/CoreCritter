@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="UnitData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/units/unit_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "BOMB BABY"
+move_speed = 68.0
+max_hp = 14
+spawn_interval = 8.0
+max_active_instances = 2
+attack_range = 28.0
+attack_interval = 0.1
+damage = 55
+color = Color(1, 0.37, 0.28, 1)
+body_polygon = PackedVector2Array(0, -15, 13, 0, 0, 15, -13, 0)
+attack_mode = 1

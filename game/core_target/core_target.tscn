@@ -1,0 +1,56 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/core_target/core_target.gd" id="1_core"]
+
+[node name="CoreTarget" type="Node2D"]
+script = ExtResource("1_core")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.72, 0.36, 0.48, 1)
+polygon = PackedVector2Array(0, -25, 23, -11, 23, 14, 0, 25, -23, 14, -23, -11)
+
+[node name="Center" type="Polygon2D" parent="."]
+color = Color(1, 0.76, 0.45, 1)
+polygon = PackedVector2Array(0, -11, 11, 0, 0, 11, -11, 0)
+
+[node name="HPBack" type="ColorRect" parent="."]
+offset_left = -32.0
+offset_top = -45.0
+offset_right = 32.0
+offset_bottom = -38.0
+color = Color(0.19, 0.12, 0.16, 1)
+
+[node name="HPFill" type="ColorRect" parent="HPBack"]
+offset_right = 64.0
+offset_bottom = 7.0
+color = Color(0.95, 0.32, 0.32, 1)
+
+[node name="HPLabel" type="Label" parent="."]
+offset_left = -34.0
+offset_top = -67.0
+offset_right = 34.0
+offset_bottom = -48.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "100 / 100"
+horizontal_alignment = 1
+
+[node name="NameLabel" type="Label" parent="."]
+offset_left = -34.0
+offset_top = 28.0
+offset_right = 34.0
+offset_bottom = 47.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "CORE"
+horizontal_alignment = 1
+
+[node name="DamageLabel" type="Label" parent="."]
+visible = false
+offset_left = -20.0
+offset_top = -90.0
+offset_right = 20.0
+offset_bottom = -70.0
+theme_override_colors/font_color = Color(1, 0.86, 0.46, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1

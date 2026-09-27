@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/cards/card_data.gd" id="1_card"]
+[ext_resource type="Resource" path="res://game/units/mushroom.tres" id="2_unit"]
+
+[resource]
+script = ExtResource("1_card")
+id = &"mushroom"
+display_name = "Mushroom"
+unit_data = ExtResource("2_unit")
+description = "Quick to spawn, light on damage."

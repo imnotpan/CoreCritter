@@ -1,0 +1,52 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://game/main/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://game/session/game_session.tscn" id="2_session"]
+[ext_resource type="Script" path="res://game/ui/coin_hud.gd" id="3_coin_hud"]
+[ext_resource type="Script" path="res://game/cards/card_data.gd" id="4_card_data"]
+[ext_resource type="Resource" path="res://game/cards/frog.tres" id="5_frog"]
+[ext_resource type="Resource" path="res://game/cards/slug.tres" id="6_slug"]
+[ext_resource type="Resource" path="res://game/cards/chicken.tres" id="7_chicken"]
+[ext_resource type="Resource" path="res://game/cards/wizard.tres" id="8_wizard"]
+[ext_resource type="Resource" path="res://game/cards/bomb_baby.tres" id="9_bomb"]
+[ext_resource type="Resource" path="res://game/cards/mushroom.tres" id="10_mushroom"]
+[ext_resource type="PackedScene" path="res://game/ui/army_builder.tscn" id="11_builder"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+development_cards = Array[ExtResource("4_card_data")]([ExtResource("5_frog"), ExtResource("6_slug"), ExtResource("7_chicken"), ExtResource("8_wizard"), ExtResource("9_bomb"), ExtResource("10_mushroom")])
+
+[node name="GameSession" parent="." instance=ExtResource("2_session")]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="CoinHUD" type="Label" parent="UI"]
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 160.0
+offset_bottom = 31.0
+theme_override_colors/font_color = Color(1, 0.9, 0.55, 1)
+theme_override_font_sizes/font_size = 15
+text = "COINS: 0"
+script = ExtResource("3_coin_hud")
+
+[node name="ArmyButton" type="Button" parent="UI"]
+offset_left = 326.0
+offset_top = 5.0
+offset_right = 393.0
+offset_bottom = 33.0
+theme_override_font_sizes/font_size = 13
+text = "ARMY"
+
+[node name="StatusLabel" type="Label" parent="UI"]
+visible = false
+offset_left = 80.0
+offset_top = 72.0
+offset_right = 320.0
+offset_bottom = 108.0
+theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
+theme_override_font_sizes/font_size = 22
+text = "CORE DESTROYED"
+horizontal_alignment = 1
+
+[node name="ArmyBuilder" parent="UI" instance=ExtResource("11_builder")]

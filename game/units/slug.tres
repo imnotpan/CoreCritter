@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UnitData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/units/unit_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "SLUG"
+move_speed = 22.0
+max_hp = 100
+spawn_interval = 12.0
+max_active_instances = 2
+attack_range = 28.0
+attack_interval = 2.4
+damage = 24
+color = Color(0.67, 0.52, 0.82, 1)
+body_polygon = PackedVector2Array(-16, 5, -12, -4, -4, -9, 8, -8, 15, 1, 14, 9, -13, 10)

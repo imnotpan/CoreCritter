@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/units/projectile.gd" id="1_projectile"]
+
+[node name="Projectile" type="Node2D"]
+script = ExtResource("1_projectile")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.7, 1, 0.4, 1)
+polygon = PackedVector2Array(0, -6, 4, -4, 6, 0, 4, 4, 0, 6, -4, 4, -6, 0, -4, -4)

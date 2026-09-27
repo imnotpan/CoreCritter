@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UnitData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/units/unit_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://game/units/projectile.tscn" id="2_projectile"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "WIZARD"
+move_speed = 45.0
+max_hp = 22
+spawn_interval = 9.0
+max_active_instances = 2
+attack_range = 90.0
+attack_profile = 2
+attack_interval = 2.8
+damage = 28
+color = Color(0.45, 0.58, 1, 1)
+body_polygon = PackedVector2Array(0, -17, 14, 10, -14, 10)
+projectile_scene = ExtResource("2_projectile")

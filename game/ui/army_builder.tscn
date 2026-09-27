@@ -1,0 +1,94 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/ui/army_builder.gd" id="1_builder"]
+
+[node name="ArmyBuilder" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_builder")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 5.0
+offset_right = 175.0
+offset_bottom = 27.0
+theme_override_font_sizes/font_size = 15
+text = "COLLECTION"
+
+[node name="Close" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 330.0
+offset_top = 3.0
+offset_right = 395.0
+offset_bottom = 27.0
+text = "CLOSE"
+
+[node name="Hint" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 27.0
+offset_right = 395.0
+offset_bottom = 45.0
+theme_override_font_sizes/font_size = 11
+text = "Pick a card, then an army slot."
+
+[node name="CardGrid" type="GridContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 48.0
+offset_right = 395.0
+offset_bottom = 225.0
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 2
+columns = 2
+
+[node name="ArmyLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 229.0
+offset_right = 180.0
+offset_bottom = 248.0
+theme_override_font_sizes/font_size = 14
+text = "CURRENT ARMY"
+
+[node name="Slots" type="HBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 251.0
+offset_right = 394.0
+offset_bottom = 287.0
+theme_override_constants/separation = 4
+
+[node name="Slot1" type="Button" parent="Panel/Slots"]
+custom_minimum_size = Vector2(126, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "1: Frog"
+
+[node name="Slot2" type="Button" parent="Panel/Slots"]
+custom_minimum_size = Vector2(126, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "2: Slug"
+
+[node name="Slot3" type="Button" parent="Panel/Slots"]
+custom_minimum_size = Vector2(126, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "3: Chicken"
+
+[connection signal="pressed" from="Panel/Close" to="." method="hide"]

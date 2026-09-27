@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UnitData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/units/unit_data.gd" id="1_data"]
+[ext_resource type="PackedScene" path="res://game/units/projectile.tscn" id="2_projectile"]
+
+[resource]
+script = ExtResource("1_data")
+display_name = "FROG"
+move_speed = 55.0
+max_hp = 30
+spawn_interval = 5.0
+max_active_instances = 3
+attack_range = 85.0
+attack_profile = 2
+attack_interval = 1.5
+damage = 10
+color = Color(0.43, 0.87, 0.45, 1)
+body_polygon = PackedVector2Array(-13, -8, -7, -13, 7, -13, 13, -8, 11, 10, 0, 14, -11, 10)
+projectile_scene = ExtResource("2_projectile")
