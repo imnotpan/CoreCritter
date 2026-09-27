@@ -44,7 +44,7 @@ offset_top = 30.0
 offset_right = 395.0
 offset_bottom = 45.0
 theme_override_font_sizes/font_size = 11
-text = "Pick a card, then a deck slot."
+text = "Click to add/remove · Right-click for details"
 
 [node name="WorldButton" type="Button" parent="Panel"]
 offset_left = 8.0
@@ -65,7 +65,7 @@ layout_mode = 0
 offset_left = 5.0
 offset_top = 75.0
 offset_right = 395.0
-offset_bottom = 252.0
+offset_bottom = 243.0
 theme_override_constants/h_separation = 5
 theme_override_constants/v_separation = 2
 columns = 2
@@ -73,34 +73,34 @@ columns = 2
 [node name="ArmyLabel" type="Label" parent="Panel"]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 257.0
-offset_right = 180.0
-offset_bottom = 275.0
+offset_top = 244.0
+offset_right = 300.0
+offset_bottom = 262.0
 theme_override_font_sizes/font_size = 14
 text = "YOUR DECK"
 
 [node name="Slots" type="HBoxContainer" parent="Panel"]
 layout_mode = 0
 offset_left = 6.0
-offset_top = 278.0
+offset_top = 264.0
 offset_right = 394.0
 offset_bottom = 314.0
 theme_override_constants/separation = 4
 
 [node name="Slot1" type="Button" parent="Panel/Slots"]
-custom_minimum_size = Vector2(126, 36)
+custom_minimum_size = Vector2(126, 50)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "1: Frog"
+theme_override_font_sizes/font_size = 11
+text = "+"
 
 [node name="Slot2" type="Button" parent="Panel/Slots"]
-custom_minimum_size = Vector2(126, 36)
+custom_minimum_size = Vector2(126, 50)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "2: Slug"
+theme_override_font_sizes/font_size = 11
+text = "+"
 
 [node name="Slot3" type="Button" parent="Panel/Slots"]
-custom_minimum_size = Vector2(126, 36)
+custom_minimum_size = Vector2(126, 50)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "3: Chicken"
+theme_override_font_sizes/font_size = 11
+text = "+"

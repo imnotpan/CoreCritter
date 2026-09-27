@@ -19,8 +19,7 @@ static func capture(collection: CardCollection, deck: DeckLoadout, session: Game
 	data.unlocked_worlds = session.world_progression.unlocked_worlds.duplicate()
 	data.completed_worlds = session.world_progression.completed_worlds.duplicate()
 	for card: CardData in deck.get_cards():
-		if card != null:
-			data.deck_ids.append(card.id)
+		data.deck_ids.append(card.id if card != null else &"")
 	data.world_id = world.id
 	data.coins = session.wallet.coins
 	data.packs = session.pack_inventory.get_pack_count()
@@ -43,11 +42,8 @@ func restore(collection: CardCollection, deck: DeckLoadout, session: GameSession
 	var cards: Array[CardData] = []
 	for card_id: StringName in deck_ids:
 		var card := collection.get_card(card_id)
-		if card != null:
-			cards.append(card)
+		cards.append(card)
 	deck.configure(collection, cards)
-	if not deck.is_valid():
-		deck.configure(collection, collection.get_unlocked_cards().slice(0, DeckLoadout.SLOT_COUNT))
 	for world: WorldData in session.worlds:
 		if world.id == world_id and session.world_progression.is_unlocked(world):
 			return world

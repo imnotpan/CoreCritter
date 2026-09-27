@@ -16,9 +16,13 @@ func configure(card_collection: CardCollection, initial_cards: Array[CardData]) 
 	collection.cards_changed.connect(_on_collection_changed)
 	slots.clear()
 	for card: CardData in initial_cards:
-		if slots.size() >= SLOT_COUNT or card == null or not collection.is_unlocked(card) or _index_for_id(card.id) >= 0 or card.unit_data == null:
-			continue
-		slots.append(card)
+		if slots.size() >= SLOT_COUNT:
+			break
+		if card == null or not collection.is_unlocked(card) or contains_card(card.id) or card.unit_data == null:
+			slots.append(null)
+		else:
+			slots.append(card)
+	slots.resize(SLOT_COUNT)
 	changed.emit()
 
 
@@ -43,6 +47,45 @@ func get_unit_data() -> Array[UnitData]:
 		if card != null:
 			units.append(card.unit_data)
 	return units
+
+
+func contains_card(card_id: StringName) -> bool:
+	return _index_for_id(card_id) >= 0
+
+
+func get_card_count() -> int:
+	var count := 0
+	for card: CardData in slots:
+		if card != null:
+			count += 1
+	return count
+
+
+func is_full() -> bool:
+	return get_card_count() >= SLOT_COUNT
+
+
+func try_add_card(card_id: StringName) -> bool:
+	if collection == null or contains_card(card_id) or is_full():
+		return false
+	var card := collection.get_card(card_id)
+	if card == null or card.unit_data == null or not collection.is_unlocked(card):
+		return false
+	var empty_index := slots.find(null)
+	if empty_index < 0:
+		return false
+	slots[empty_index] = card
+	changed.emit()
+	return true
+
+
+func remove_card(card_id: StringName) -> bool:
+	var index := _index_for_id(card_id)
+	if index < 0:
+		return false
+	slots[index] = null
+	changed.emit()
+	return true
 
 
 func equip(slot_index: int, card: CardData) -> bool:

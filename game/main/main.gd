@@ -43,9 +43,13 @@ func _ready() -> void:
 	army_builder.world_requested.connect(_open_worlds)
 	army_builder.start_requested.connect(_start_run)
 	army_builder.back_requested.connect(_back_from_builder)
-	army_builder.equip_requested.connect(func(index: int, card: CardData) -> void:
-		if game_session.run == null:
-			deck.equip(index, card)
+	army_builder.card_toggle_requested.connect(func(card: CardData) -> void:
+		if game_session.run != null or flow.state != AppFlow.State.PRE_RUN or army_builder.collection_only:
+			return
+		if deck.contains_card(card.id):
+			deck.remove_card(card.id)
+		elif not deck.try_add_card(card.id):
+			army_builder.show_deck_feedback("DECK FULL" if deck.is_full() else "CARD UNAVAILABLE")
 	)
 	army_builder.upgrade_requested.connect(func(card: CardData) -> void:
 		if game_session.run == null and collection.upgrade(card.id):
@@ -236,7 +240,7 @@ func _debug_unlock_card() -> void:
 
 
 func _debug_inspect() -> void:
-	print("DeckLoadout: ", deck.get_cards().map(func(card: CardData) -> String: return card.display_name))
+	print("DeckLoadout: ", deck.get_cards().map(func(card: CardData) -> String: return card.display_name if card != null else "Empty"))
 	if game_session.run != null:
 		print("RunLoadout: ", game_session.run.loadout.get_card_ids())
 		for card: CardData in game_session.run.loadout.get_cards():

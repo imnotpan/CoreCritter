@@ -4,7 +4,7 @@ extends Control
 signal world_requested
 signal start_requested
 signal back_requested
-signal equip_requested(index: int, card: CardData)
+signal card_toggle_requested(card: CardData)
 signal upgrade_requested(card: CardData)
 signal debug_copies_requested(card: CardData)
 signal debug_coins_requested
@@ -27,7 +27,7 @@ var upgrade_button: Button
 var back_button: Button
 var debug_copies_button: Button
 var debug_coins_button: Button
-var detail_slot_buttons: Array[Button] = []
+var _feedback_tween: Tween
 
 
 func configure(card_collection: CardCollection, deck: DeckLoadout, player_wallet: Wallet, worlds: WorldProgression) -> void:
@@ -50,7 +50,7 @@ func configure(card_collection: CardCollection, deck: DeckLoadout, player_wallet
 func open(as_collection: bool = false) -> void:
 	collection_only = as_collection
 	selected_card = null
-	hint_label.text = "View cards and upgrades." if collection_only else "COLLECTION — pick a card, then a deck slot."
+	hint_label.text = _default_hint()
 	_refresh()
 	visible = true
 
@@ -77,8 +77,6 @@ func _refresh() -> void:
 	back_button.visible = showing_detail
 	debug_copies_button.visible = showing_detail and OS.is_debug_build()
 	debug_coins_button.visible = showing_detail and OS.is_debug_build()
-	for button: Button in detail_slot_buttons:
-		button.visible = showing_detail and not collection_only
 	if showing_detail:
 		_refresh_detail()
 		return
@@ -93,24 +91,30 @@ func _refresh() -> void:
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.text = _card_text(card, equipped)
 		button.icon = card.icon if card.icon != null else _placeholder_icon(card.unit_data.color)
-		button.disabled = not collection.is_unlocked(card) and not collection_only
-		button.modulate = Color(1, 0.93, 0.6) if card == selected_card else Color.WHITE
+		button.modulate = Color(0.6, 0.6, 0.6) if not collection.is_unlocked(card) else (Color(1, 0.93, 0.6) if loadout.contains_card(card.id) and not collection_only else Color.WHITE)
+		button.tooltip_text = "Right-click for details" if not collection_only else "View details and upgrades"
+		button.gui_input.connect(_on_card_input.bind(card))
 		button.pressed.connect(_on_card_pressed.bind(card))
 		card_grid.add_child(button)
 	for index: int in range(slot_buttons.size()):
 		var card: CardData = equipped[index] if index < equipped.size() else null
-		slot_buttons[index].text = "%d: %s" % [index + 1, card.display_name if card != null else "Empty"]
+		slot_buttons[index].text = "%s\n%s" % [card.display_name, "★".repeat(collection.get_star_level(card))] if card != null else "+"
+		slot_buttons[index].icon = (card.icon if card.icon != null else _placeholder_icon(card.unit_data.color)) if card != null else null
+		slot_buttons[index].disabled = card == null
+		slot_buttons[index].tooltip_text = "Click to remove" if card != null else "Click a collection card to add"
+	$Panel/ArmyLabel.text = "YOUR DECK  %d/%d" % [loadout.get_card_count(), DeckLoadout.SLOT_COUNT]
+	if _feedback_tween == null or not _feedback_tween.is_running():
+		hint_label.text = _default_hint()
 
 
 func _card_text(card: CardData, equipped: Array[CardData]) -> String:
-	var selected := "SLOT %d" % (equipped.find(card) + 1) if equipped.has(card) else "AVAILABLE"
+	var selected := "✓ IN DECK" if equipped.has(card) else "AVAILABLE"
 	if collection_only:
 		selected = "OWNED"
 	if not collection.is_unlocked(card):
 		selected = "LOCKED"
 	else:
 		selected = "Copies: %d · %s" % [collection.get_owned_copies(card), selected]
-	var unit := card.unit_data
 	return "%s  %s  %s\n%s" % [card.display_name, _stars(collection.get_star_level(card)), card.rarity_name().to_upper(), selected]
 
 
@@ -125,14 +129,6 @@ func _build_detail() -> void:
 	detail_label.size = Vector2(380, 193)
 	detail_label.add_theme_font_size_override("font_size", 13)
 	panel.add_child(detail_label)
-	for index: int in range(DeckLoadout.SLOT_COUNT):
-		var slot_button := Button.new()
-		slot_button.position = Vector2(10 + index * 129, 210)
-		slot_button.size = Vector2(122, 32)
-		slot_button.text = "EQUIP SLOT %d" % (index + 1)
-		slot_button.pressed.connect(_on_slot_pressed.bind(index))
-		panel.add_child(slot_button)
-		detail_slot_buttons.append(slot_button)
 	upgrade_button = Button.new()
 	upgrade_button.position = Vector2(10, 247)
 	upgrade_button.size = Vector2(260, 33)
@@ -236,17 +232,49 @@ func _placeholder_icon(color: Color) -> Texture2D:
 
 
 func _on_card_pressed(card: CardData) -> void:
+	if collection_only:
+		_show_detail(card)
+	elif not collection.is_unlocked(card):
+		show_deck_feedback("LOCKED — unlock from a pack")
+	else:
+		card_toggle_requested.emit(card)
+
+
+func _on_card_input(event: InputEvent, card: CardData) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		_show_detail(card)
+		accept_event()
+
+
+func _show_detail(card: CardData) -> void:
 	selected_card = card
-	hint_label.text = "View %s progression." % card.display_name if collection_only else "Choose a deck slot for %s." % card.display_name
+	hint_label.text = "View %s details." % card.display_name
 	_refresh()
 
 
 func _on_slot_pressed(index: int) -> void:
 	if collection_only:
 		return
-	if selected_card == null:
-		hint_label.text = "Pick a card first."
-		return
-	equip_requested.emit(index, selected_card)
-	selected_card = null
-	_refresh()
+	var cards := loadout.get_cards()
+	if index < cards.size() and cards[index] != null:
+		card_toggle_requested.emit(cards[index])
+
+
+func _default_hint() -> String:
+	if collection_only:
+		return "View cards and upgrades."
+	var missing := DeckLoadout.SLOT_COUNT - loadout.get_card_count()
+	if missing > 0:
+		return "SELECT %d MORE CREATURE%s" % [missing, "S" if missing != 1 else ""]
+	return "Click to add/remove · Right-click for details"
+
+
+func show_deck_feedback(message: String) -> void:
+	if _feedback_tween != null:
+		_feedback_tween.kill()
+	hint_label.text = message
+	hint_label.modulate = Color(1, 0.85, 0.5)
+	_feedback_tween = create_tween()
+	_feedback_tween.tween_property(hint_label, "modulate", Color.WHITE, 0.25)
+	_feedback_tween.tween_interval(0.9)
+	_feedback_tween.tween_callback(func() -> void: hint_label.text = _default_hint())
