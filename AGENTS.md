@@ -92,3 +92,20 @@ Before reporting a task complete, run:
 ./tools/check.sh
 
 Do not report completion if validation fails.
+
+## Git workflow
+
+- Do not commit during implementation unless explicitly requested.
+- When a focused task is complete and the user requests closure, use `.agents/skills/finish-task/SKILL.md`.
+- Validate before committing and inspect the diff before staging.
+- Never commit unrelated user changes.
+- Prefer one focused commit per milestone or feature.
+- Never push unless explicitly requested.
+
+## Context efficiency
+
+- Inspect only files relevant to the current task; do not reread unrelated subsystems without reason.
+- Refer to `docs/architecture.md` and `docs/game_design.md` when relevant instead of repeating them in task reports.
+- Create documentation only when it provides durable value.
+- Keep completion reports concise; use repository state and Git history instead of repeating past milestone descriptions.
+- Do not refactor unrelated working systems.
